@@ -4,89 +4,83 @@
  *
  * Created on February 8, 2024, 6:54 PM
  */
-
+#pragma config FEXTOSC = OFF    // External Oscillator mode selection bits (EC above 8MHz; PFM set to high power)
+#pragma config RSTOSC = HFINT32
+#pragma config CLKOUTEN = OFF   // Clock Out Enable bit (CLKOUT function is disabled; i/o or oscillator function on OSC2)
+#pragma config CSWEN = ON       // Clock Switch Enable bit (Writing to NOSC and NDIV is allowed)
+#pragma config FCMEN = ON
 
 #include <xc.h>
-#pragma config RSTOSC = HFINT32
+
 #pragma config WDTE = OFF
 
+#define _XTAL_FREQ 32000000
 
 /*
 a global variable in place of a parameter to be used by the ISR
 */
 int byteToSend;
-
+int noOp = 0;
 
 
 void setUp(void){
        
-    TX1STAbits.TXEN = 1;
-    TX1STAbits.SYNC = 0;
+    TX1STAbits.TXEN = 1; //Transmit Enable bit: 1 = Transmit enabled
+    TX1STAbits.SYNC = 0; //EUSART Mode Select bit: 0 = Asynchronous mode
     
-    RC1STAbits.SPEN = 1;
+    RC1STAbits.SPEN = 1; // Serial Port Enable bit: 1 = Serial port enabled
     
-    BAUD1CONbits.BRG16 = 1;
+    BAUD1CONbits.BRG16 = 1; //16-bit Baud Rate Generator bit: 1 = 16-bit Baud Rate Generator is used
+                            //0 = 8-bit Baud Rate Generator is used
     
-    TX1STAbits.BRGH = 1;
+    TX1STAbits.BRGH = 1; //High Baud Rate Select bit: Asynchronous mode: 1= High speed
     
-    SP1BRGL = 0b01000000;
-    SP1BRGH = 0b11;
+    SP1BRGL = 0b01000000; //Lower eight bits of the Baud Rate Generator
+    SP1BRGH = 0b11;       //Upper eight bits of the Baud Rate Generator
     
-    INTCONbits.GIE = 1;
-    INTCONbits.PEIE = 1;
-    PIE3bits.TXIE = 1;
+    INTCONbits.GIE = 1; //Global Interrupt Enable bit: 1 = Enables all active interrupts
+    INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
+    PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
     
-    RC5PPS = 0x10;
+    RC5PPS = 0x10; //PPS OUTPUT SIGNAL ROUTING OPTIONS: 0x10 = TX/CK
+    
       
 }
 
 
 void __interrupt() _transmitByte(){
-
-    TX1REGbits.TX1REG = byteToSend; 
+    
+    
+    TX1REGbits.TX1REG = byteToSend;
+    
    
 }
 
+
 void transmitByte(int byteToSend_IN){
+   
+    TX1REG = 0x00; //clear register
     
-    byteToSend = byteToSend_IN;
+    byteToSend = byteToSend_IN; //set global var
     _transmitByte(); //ISR
     
-}
-
-
-void setByte(int byte_IN){ //not currently in use but would be helpful to implement for cleaner code
-
-    byteToSend = byte_IN;
-
 }
  
 
 void transmitCommonMotor(void){
 
     //0xFE1901060400;
-//    byteToSend = 0xFE;
-//    _transmitByte();
-    transmitByte(0xFE);
     
-//    byteToSend = 0x19;
-//    _transmitByte();
+    transmitByte(0xFE);
+
     transmitByte(0x19);
     
-//    byteToSend = 0x01;
-//    _transmitByte();
     transmitByte(0x01);
-    
-//    byteToSend = 0x06;
-//    _transmitByte();
+
     transmitByte(0x06);
-    
-//    byteToSend = 0x04;
-//    _transmitByte();
+
     transmitByte(0x04);
     
-//    byteToSend = 0x00;
-//    _transmitByte();
     transmitByte(0x00);
 
 }
@@ -94,28 +88,45 @@ void transmitCommonMotor(void){
 
 void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
     
-    //TX1STAbits.TXEN = 1;
-    
     transmitCommonMotor();
     
-    //byteToSend = motorA_dir_IN;
-    //_transmitByte();
     transmitByte(motorA_dir_IN);
     
-    //byteToSend = motorA_speed_IN;
-    //_transmitByte();
     transmitByte(motorA_speed_IN);
+        
+    transmitByte(motorB_dir_IN);  
     
-    
-    //byteToSend = motorB_dir_IN;
-    //_transmitByte();
-    transmitByte(motorB_dir_IN);
-    
-    //byteToSend = motorB_speed_IN;
-    //_transmitByte();
     transmitByte(motorB_speed_IN);
 
 }
+
+void getPCLS(){
+
+    //recive register has a buffer of 2 bytes
+    
+    //ask pcls to get data from controller
+    
+    transmitByte(0xFE); //sink
+    
+    transmitByte(0x19); //sink
+    
+    transmitByte(0x01);
+    
+    transmitByte(0x05);
+    
+    transmitByte(0x00);
+    
+    transmitByte(0x00);
+    
+    //
+    
+
+}
+
+
+
+
+
 
 void main(void) {
     
@@ -127,13 +138,22 @@ void main(void) {
     
     while(1){
         
-        testPulseMotor(0x01, 0x64, 0x00, 0xFF);
+        //testPulseMotor(0x01, 0x64, 0x00, 0xFF);
+        //getPCLS();
+        
+        transmitByte(0x56); //sink
+        
+        transmitByte(0xFF); //sink
+        
+        transmitByte(0xF1);
+        
+        //__delay_ms(2500);
+        
         
     } 
     
     return;
 }
-
 
 
 
