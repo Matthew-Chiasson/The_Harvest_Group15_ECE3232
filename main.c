@@ -50,11 +50,16 @@ void setUp(void){
     
 }
 
-void __interrupt() _transmitByte(){  
+void __interrupt() _ISR(){  
     
-    if(PIR3bits.TXIF == 1){
+    if(PIR3bits.TXIF == 1){ //transmit flag
         PIE3bits.TXIE = 0;
         waitForIt();//boom
+    }
+    
+    
+    if(PIR3bits.RCIF == 1){ //receive flag
+       
     }
         
     
