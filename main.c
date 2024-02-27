@@ -40,8 +40,9 @@ void setUp(void){
     
     TX1STAbits.BRGH = 1; //High Baud Rate Select bit: Asynchronous mode: 1= High speed
     
-    SP1BRGL = 0b01000000; //Lower eight bits of the Baud Rate Generator
-    SP1BRGH = 0b11;       //Upper eight bits of the Baud Rate Generator
+    SP1BRGL = 0b01000100; //Lower eight bits of the Baud Rate Generator
+    SP1BRGH = 0b00;       //Upper eight bits of the Baud Rate Generator
+    //baud rate = 115200
     
     INTCONbits.GIE = 1; //Global Interrupt Enable bit: 1 = Enables all active interrupts
     INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
