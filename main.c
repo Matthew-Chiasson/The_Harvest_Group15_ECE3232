@@ -5,6 +5,7 @@
 #pragma config FCMEN = ON
 
 #include <xc.h>
+#include <stdbool.h>
 
 #pragma config WDTE = OFF
 
@@ -14,7 +15,11 @@
 a global variable in place of a parameter to be used by the ISR
 */
 int byteToSend = 1;
-
+int dataIn[208];
+int payloadSize = 0;
+int index = 0;
+bool ReceiveComplete;
+int here = 0;
 
 void waitForIt(){
     
@@ -29,26 +34,49 @@ void waitForIt(){
 void setUp(void){
     
     RC5PPS = 0x10; //PPS OUTPUT SIGNAL ROUTING OPTIONS: 0x10 = TX/CK
-       
+    RXPPS = 0x16; // PPS INPUT SIGNAL ROUTING: 0x16 = RC6
+    
+    TRISCbits.TRISC6 = 1;
+    TRISCbits.TRISC5 = 1;
     TX1STAbits.TXEN = 1; //Transmit Enable bit: 1 = Transmit enabled
     TX1STAbits.SYNC = 0; //EUSART Mode Select bit: 0 = Asynchronous mode
     
     RC1STAbits.SPEN = 1; // Serial Port Enable bit: 1 = Serial port enabled
+    RC1STAbits.CREN = 1;
     
     BAUD1CONbits.BRG16 = 1; //16-bit Baud Rate Generator bit: 1 = 16-bit Baud Rate Generator is used
                             //0 = 8-bit Baud Rate Generator is used
     
     TX1STAbits.BRGH = 1; //High Baud Rate Select bit: Asynchronous mode: 1= High speed
-    
-    SP1BRGL = 0b01000100; //Lower eight bits of the Baud Rate Generator
-    SP1BRGH = 0b00;       //Upper eight bits of the Baud Rate Generator
+    SP1BRGL = 0x44; //Lower eight bits of the Baud Rate Generator
+    SP1BRGH = 0x00;       //Upper eight bits of the Baud Rate Generator
     //baud rate = 115200
     
     INTCONbits.GIE = 1; //Global Interrupt Enable bit: 1 = Enables all active interrupts
     INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
+    PIE3bits.RCIE = 1;   // Receive interrupt enabled
+    ANSELCbits.ANSC6 = 0; // RC6 is digital input
     //PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
     
 }
+
+void identifyMSG(int msg_In[]){
+
+    //message bytes
+    int msg_ID_byte1 = msg_In[2];
+    int msg_ID_byte2 = msg_In[3];
+
+    //do stuff based on messageb bytes
+    if(msg_ID_byte1 == 2 && msg_ID_byte2 == 4){ //PCLS
+    
+        //do code for PCLS
+        here = 1; //for testing purposes
+        
+    
+    }//else if other stuff
+
+}
+
 
 void __interrupt() _ISR(){  
     
@@ -58,12 +86,48 @@ void __interrupt() _ISR(){
     }
     
     
-    if(PIR3bits.RCIF == 1){ //receive flag
+   if(PIR3bits.RCIF == 1){ //receive flag
+       //ReceiveComplete = false;
        
-    }
+        if(index < 6 ){
+            dataIn[index] = RC1REG;
+            
+        }
+        else if(index == 6){
+            
+            payloadSize = dataIn[4] + dataIn[5] + 6;
+            dataIn[index] = RC1REG;
+            
+        }
+        else if(index < payloadSize){
         
-    
+            dataIn[index] = RC1REG;
+        
+        }
+        
+        index += 1;    
+           
+        if(index == payloadSize){
+            index = 0;
+            //PIE3bits.RCIE = 0;
+            //ReceiveComplete = 1;
+            int *message = (int *)malloc(payloadSize * sizeof(int));
+            
+            for(int j = 0; j < (payloadSize); j++){
+                
+                message[j] = dataIn[j];
+            
+            }
+            
+            identifyMSG(message); 
+            free(message);  
+             
+        }
+          
+    }
+       
 }
+        
 
 
 void transmitByte(int byteToSend_IN){
@@ -75,11 +139,11 @@ void transmitByte(int byteToSend_IN){
 }
  
 
-void transmitSink(){
+void transmitSync(){
     
-    transmitByte(0xFE); // sink
+    transmitByte(0xFE); // sync
 
-    transmitByte(0x19); // sink
+    transmitByte(0x19); // sync
 
 }
 
@@ -123,11 +187,11 @@ void getPCLS(){
     
     //ask pcls to get data from controller
     
-    transmitSink();
+    transmitSync();
     
-    transmitByte(0x01);
+    transmitByte(0x01); // MSG ID
     
-    transmitByte(0x05);
+    transmitByte(0x04); // MSG ID
     
     transmitByte(0x00);
     
@@ -152,15 +216,10 @@ void main(void) {
         waitForIt();//boom
         
         
-        testPulseMotor(0x01, 0x64, 0x00, 0x00);
-        //getPCLS();
+        //testPulseMotor(0x01, 0x64, 0x00, 0x00);
+        getPCLS();
         
-      
-        //transmitByte(0x56);
-
-        //transmitByte(0xF1);
         
-        //transmitByte(0x00);
         
         
         __delay_ms(250);
