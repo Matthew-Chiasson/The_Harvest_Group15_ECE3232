@@ -136,7 +136,7 @@ void getPCLS(){
 
     //recive register has a buffer of 2 bytes
     
-    //ask pcls to get data from controller
+    //ask pcls to get data from PCLS such as shield code and health status
     
     transmitSync();
     
@@ -149,10 +149,22 @@ void getPCLS(){
     transmitByte(0x00);
     
     //
-    
-
 }
 
+void getUserData(){
+    //ask pcls to get data from the RF controller
+    
+    transmitSync();
+    
+    transmitByte(0x01); // MSG ID
+    
+    transmitByte(0x05); // MSG ID
+    
+    transmitByte(0x00);
+    
+    transmitByte(0x00);
+    
+}
 
 
 void main(void) {
@@ -169,7 +181,8 @@ void main(void) {
         
         //testPulseMotor(0x01, 0x64, 0x00, 0x00);
         getPCLS();
-        
+        __delay_ms(10);
+        getUserData();
       
         //transmitByte(0x56);
 
