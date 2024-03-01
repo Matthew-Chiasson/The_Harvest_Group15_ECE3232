@@ -177,13 +177,22 @@ void getPCLS(){
     transmitByte(0x00);
 }
 
-
+void getUserData(){
+    //ask pcls to get data from the RF controller
+    
+    transmitSync();
+    
+    transmitByte(0x01); // MSG ID
+    transmitByte(0x05); // MSG ID
+    transmitByte(0x00);
+    transmitByte(0x00);
+}
 
 void main(void) {
     
     setUp();
     
-    //backrward on motor A test
+    //backward on motor A test
     //02 64 00 00
     //0x64 is max speed
     
@@ -192,6 +201,8 @@ void main(void) {
         
         testPulseMotor(0x02, 0x64, 0x02, 0x20);
         getPCLS();  
+        __delay_ms(10);
+        getUserData();
         
         __delay_ms(250);
     } 
