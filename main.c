@@ -73,7 +73,7 @@ void identifyMSG(int msg_In[]){
         here = 1; //for testing purposes
         
     
-    }//else if other stuff
+    }//else if other stuff (not yet implemented)
 
 }
 
@@ -135,71 +135,46 @@ void transmitByte(int byteToSend_IN){
     byteToSend = byteToSend_IN; //set global var
     TX1REGbits.TX1REG = byteToSend; //set the register to hold the value
     PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
-  
 }
  
 
-void transmitSync(){
-    
+void transmitSync(){   
     transmitByte(0xFE); // sync
-
     transmitByte(0x19); // sync
-
 }
 
 void transmitCommonMotor(void){
 
-    //0xFE 19 (sink) 
-    // 01060400;
-    
     //sink has already been called
-    
     transmitByte(0x01);
-
     transmitByte(0x06);
-
     transmitByte(0x04);
-    
     transmitByte(0x00);
-
 }
 
 
 void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
     
     transmitSink();
-    
     transmitCommonMotor();
     
     transmitByte(motorA_dir_IN);
-    
-    transmitByte(motorA_speed_IN);
-        
+    transmitByte(motorA_speed_IN);   
     transmitByte(motorB_dir_IN);  
-    
     transmitByte(motorB_speed_IN);
-
 }
 
 void getPCLS(){
 
     //recive register has a buffer of 2 bytes
-    
     //ask pcls to get data from controller
     
     transmitSync();
     
     transmitByte(0x01); // MSG ID
-    
     transmitByte(0x04); // MSG ID
-    
     transmitByte(0x00);
-    
     transmitByte(0x00);
-    
-    //
-    
-
 }
 
 
@@ -208,23 +183,19 @@ void main(void) {
     
     setUp();
     
-    //forward on motor A test
-    //01 64 00 00
+    //backrward on motor A test
+    //02 64 00 00
     //0x64 is max speed
     
     while(1){
-        waitForIt();//boom
+        waitForIt(); //wait for Shift REG
         
-        
-        //testPulseMotor(0x01, 0x64, 0x00, 0x00);
-        getPCLS();
-        
-        
-        
+        testPulseMotor(0x02, 0x64, 0x02, 0x20);
+        getPCLS();  
         
         __delay_ms(250);
     } 
-    
+
     return;
 }
 
