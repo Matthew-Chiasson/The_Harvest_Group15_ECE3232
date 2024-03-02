@@ -56,8 +56,6 @@ void setUp(void){
     INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
     PIE3bits.RCIE = 1;   // Receive interrupt enabled
     ANSELCbits.ANSC6 = 0; // RC6 is digital input
-    //PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
-    
 }
 
 void identifyMSG(int msg_In[]){
@@ -84,51 +82,38 @@ void __interrupt() _ISR(){
         PIE3bits.TXIE = 0;
         waitForIt();//boom
     }
-    
+
     
    if(PIR3bits.RCIF == 1){ //receive flag
-       //ReceiveComplete = false;
        
         if(index < 6 ){
             dataIn[index] = RC1REG;
-            
         }
         else if(index == 6){
-            
             payloadSize = dataIn[4] + dataIn[5] + 6;
             dataIn[index] = RC1REG;
-            
         }
         else if(index < payloadSize){
-        
             dataIn[index] = RC1REG;
-        
         }
-        
-        index += 1;    
-           
+        index += 1;
+       
         if(index == payloadSize){
             index = 0;
-            //PIE3bits.RCIE = 0;
-            //ReceiveComplete = 1;
+            
             int *message = (int *)malloc(payloadSize * sizeof(int));
             
-            for(int j = 0; j < (payloadSize); j++){
-                
+            for(int j = 0; j < (payloadSize); j++){       
                 message[j] = dataIn[j];
-            
             }
             
             identifyMSG(message); 
             free(message);  
              
         }
-          
     }
-       
 }
         
-
 
 void transmitByte(int byteToSend_IN){
     
