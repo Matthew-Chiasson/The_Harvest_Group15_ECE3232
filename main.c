@@ -6,10 +6,12 @@
 
 #include <xc.h>
 #include <stdbool.h>
+#include "motorControl.h"
 
 #pragma config WDTE = OFF
 
 #define _XTAL_FREQ 32000000
+
 
 /*
 a global variable in place of a parameter to be used by the ISR
@@ -128,6 +130,7 @@ void transmitSync(){
     transmitByte(0x19); // sync
 }
 
+/*
 void transmitCommonMotor(void){
 
     //sink has already been called
@@ -140,7 +143,7 @@ void transmitCommonMotor(void){
 
 void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
     
-    transmitSink();
+    transmitSync();
     transmitCommonMotor();
     
     transmitByte(motorA_dir_IN);
@@ -148,6 +151,8 @@ void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, i
     transmitByte(motorB_dir_IN);  
     transmitByte(motorB_speed_IN);
 }
+*/
+ 
 
 void getPCLS(){
 
@@ -183,8 +188,8 @@ void main(void) {
     
     while(1){
         waitForIt(); //wait for Shift REG
-        
-        testPulseMotor(0x02, 0x64, 0x02, 0x20);
+        ///////////////bD    aS    aD     bS
+        testPulseMotor(0x01, 0x64, 0x01, 0x64);
         getPCLS();  
         __delay_ms(10);
         getUserData();
@@ -194,7 +199,5 @@ void main(void) {
 
     return;
 }
-
-
 
 
