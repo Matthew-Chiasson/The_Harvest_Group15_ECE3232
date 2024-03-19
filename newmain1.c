@@ -92,9 +92,9 @@ void __interrupt() _ISR(){
         if(index < 6 ){
             *receive_here = RC1REG;
             receive_here ++;
-            
             end();
-            messages[1] = RC1REG;
+         
+            //messages[1] = RC1REG;
             //dataIn[index] = RC1REG;
         }
         else if(index == 6){
@@ -113,9 +113,10 @@ void __interrupt() _ISR(){
         }
         index += 1;
        
-        /*if(index == payloadSize){
+        if(index == payloadSize){
             index = 0;
-            
+        }
+            /*
             int *message = (int *)malloc(payloadSize * sizeof(int));
             
             for(int j = 0; j < (payloadSize); j++){       

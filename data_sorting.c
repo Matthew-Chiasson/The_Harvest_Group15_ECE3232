@@ -45,6 +45,8 @@ int check()
 void end(){
     if(read_here == end_of_messages)
         read_here = messages_origin;
+    if(receive_here == end_of_messages)
+        receive_here = messages_origin;
 }
 
 void get_pcls_info()
@@ -69,9 +71,9 @@ void get_pcls_info()
     
     while(1)
     {
-        if ((receive_here > read_here) & (receive_here-read_here > 21))
+        if ((receive_here > read_here) & (receive_here-read_here >= 7))
             break;
-        else if((read_here > receive_here)& (read_here-receive_here < 79))
+        else if((read_here > receive_here)& (read_here-receive_here < 94))
             break;
             
         search_count ++;
