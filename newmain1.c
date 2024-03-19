@@ -89,6 +89,10 @@ void __interrupt() _ISR(){
     
    if(PIR3bits.RCIF == 1){ //receive flag
        
+       *receive_here = RC1REG;
+        receive_here ++;
+        end();
+       /*
         if(index < 6 ){
             *receive_here = RC1REG;
             receive_here ++;
@@ -114,6 +118,9 @@ void __interrupt() _ISR(){
         index += 1;
        
         if(index == payloadSize){
+            *receive_here = RC1REG;
+            receive_here ++;
+            end();
             index = 0;
         }
             /*
@@ -127,6 +134,7 @@ void __interrupt() _ISR(){
             free(message);  
              
         }*/
+       
     }
 }
         
@@ -204,10 +212,11 @@ void main(void) {
         waitForIt(); //wait for Shift REG
         ///////////////bD    aS    aD     bS
         //testPulseMotor(0x01, 0x64, 0x01, 0x64);
-        getPCLS();  
+       // getPCLS();  
+       // __delay_ms(10);
+        motorControl();
+        getUserData();
         __delay_ms(10);
-        //getUserData();
-        //__delay_ms(10);
         sort_data();
         __delay_ms(250);
         

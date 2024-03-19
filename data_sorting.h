@@ -50,8 +50,38 @@ extern uint8_t *receive_here;
 extern uint8_t *end_of_messages;
 extern uint8_t data_sorting_error;
 
+extern uint8_t teamID;
+extern uint8_t playerID;
+extern uint8_t overallHealthLSB;
+extern uint8_t overallHealthMSB;
+extern uint8_t shieldCodeFlag;
+extern uint8_t repairCodeFlag;
+
+extern uint8_t rightJoyStickXLSB;
+extern uint8_t rightJoyStickXMSB;
+extern uint8_t rightJoyStickYLSB;
+extern uint8_t rightJoyStickYMSB;
+extern uint8_t leftJoyStickYLSB;
+extern uint8_t leftJoyStickYMSB;
+extern uint8_t leftJoyStickXLSB;
+extern uint8_t leftJoyStickXMSB;
+extern uint8_t switchALSB;
+extern uint8_t switchAMSB;
+extern uint8_t switchBLSB;
+extern uint8_t switchBMSB;
+extern uint8_t switchCLSB;
+extern uint8_t switchCMSB;
+extern uint8_t switchDLSB;
+extern uint8_t switchDMSB;
+extern uint8_t VRALSB;
+extern uint8_t VRAMSB;
+extern uint8_t VRBLSB;
+extern uint8_t VRBMSB;
+
+
 int check();
 void end();
+int increase();
 void sort_data();
 void get_pcls_info();
 void get_user_data();

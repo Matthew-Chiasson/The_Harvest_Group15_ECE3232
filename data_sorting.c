@@ -42,11 +42,20 @@ int check()
     return 0;
 }
 
+
 void end(){
     if(read_here == end_of_messages)
         read_here = messages_origin;
     if(receive_here == end_of_messages)
         receive_here = messages_origin;
+}
+int increase()
+{
+    read_here ++;
+    end();
+    if(read_here == receive_here)
+        return 1;
+    return 0;
 }
 
 void get_pcls_info()
@@ -55,17 +64,12 @@ void get_pcls_info()
     uint8_t searching_error = 110;
     uint8_t search_count = 0;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     payload = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
-    
     payload = payload << 8;
     payload = payload || *read_here;
     
@@ -73,7 +77,7 @@ void get_pcls_info()
     {
         if ((receive_here > read_here) & (receive_here-read_here >= 7))
             break;
-        else if((read_here > receive_here)& (read_here-receive_here < 94))
+        else if((read_here > receive_here)& (read_here-receive_here <= 93))
             break;
             
         search_count ++;
@@ -84,39 +88,27 @@ void get_pcls_info()
         }
     }
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     teamID = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     playerID = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     overallHealthLSB = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     overallHealthMSB = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     shieldCodeFlag = *read_here;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
         return;
     repairCodeFlag = *read_here;
 }
@@ -128,18 +120,20 @@ void get_user_data()
     uint8_t searching_error = 110;
     uint8_t search_count = 0;
     
-    read_here ++;
-    end();
-    if(check())
+    if(increase())
+        return;
+    payload = *read_here;
+    
+    if(increase())
         return;
     payload = payload << 8;
     payload = payload || *read_here;
     
     while(1)
     {
-        if ((receive_here > read_here) & (receive_here-read_here > 7))
+        if ((receive_here > read_here) & (receive_here-read_here >= 21))
             break;
-        else if((read_here > receive_here) & (read_here-receive_here < 93))
+        else if((read_here > receive_here) & (read_here-receive_here <= 79))
             break;
             
         search_count ++;
@@ -150,6 +144,78 @@ void get_user_data()
         }
     }
     
+    if(increase())
+        return;
+    rightJoyStickXLSB = *read_here;
+    if(increase())
+        return;
+    rightJoyStickXMSB = *read_here;
+    
+    
+    if(increase())
+        return;
+    rightJoyStickYLSB = *read_here;
+    if(increase())
+        return;
+    rightJoyStickYMSB = *read_here;
+    
+    
+    if(increase())
+        return;
+    leftJoyStickYLSB = *read_here;
+    if(increase())
+        return;
+    leftJoyStickYMSB = *read_here;
+    
+    if(increase())
+        return;
+    leftJoyStickXLSB = *read_here;
+    if(increase())
+        return;
+    leftJoyStickXMSB = *read_here;
+    
+    
+    if(increase())
+        return;
+    switchALSB = *read_here;
+    if(increase())
+        return;
+    switchAMSB = *read_here;
+    
+    if(increase())
+        return;
+    switchBLSB = *read_here;
+    if(increase())
+        return;
+    switchBMSB = *read_here;
+    
+    if(increase())
+        return;
+    switchCLSB = *read_here;
+    if(increase())
+        return;
+    switchCMSB = *read_here;
+    
+    if(increase())
+        return;
+    switchDLSB = *read_here;
+    if(increase())
+        return;
+    switchDMSB = *read_here;
+    
+    if(increase())
+        return;
+    VRALSB = *read_here;
+    if(increase())
+        return;
+    VRAMSB = *read_here;
+    
+    if(increase())
+        return;
+    VRBLSB = *read_here;
+    if(increase())
+        return;
+    VRBMSB = *read_here;
 }
 
 void sort_data()
@@ -188,10 +254,12 @@ void sort_data()
     if(check())
         return;
 
-    if (*read_here == 0x04)
-        get_pcls_info();
+    //if (*read_here == 0x04)
+        //get_pcls_info();
     //else if(*read_here == 0x05)
-      //  get_user_data();
+    //    get_user_data();
+    if(*read_here == 0x05)
+        get_user_data();
     
     return;    
 }
