@@ -15,7 +15,6 @@ void transmitShield(){
             
             transmitByte(0x00); // Payload MSB
             
-            // Need to add another byte for shield code?
         }
     }
 }
