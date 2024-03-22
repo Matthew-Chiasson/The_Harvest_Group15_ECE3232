@@ -2,7 +2,7 @@
 #include "data_sorting.h"
 
 
-
+int rightJoyY;
 void transmitCommonMotor(void){
 
     //sink has already been called
@@ -20,9 +20,9 @@ void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, i
     transmitCommonMotor();
     
     
-    transmitByte(motorA_dir_IN);
+    transmitByte(motorB_dir_IN);
     transmitByte(motorA_speed_IN);   
-    transmitByte(motorB_dir_IN);  
+    transmitByte(motorA_dir_IN);  
     transmitByte(motorB_speed_IN);
 }
 
@@ -30,25 +30,32 @@ void motorControl()
 {
     int motorA_dir;
     int motorB_dir;
-    int motorA_speed;
-    int motorB_speed;
-    transmitSync();
+    int motorA_speed = 51;
+    int motorB_speed = 51;
+    //transmitSync();
     
-    if((rightJoyStickYMSB >= 0x05))
+    int deadzone = 20;
+    
+    rightJoyY = rightJoyStickYMSB;
+    rightJoyY = rightJoyY << 8;
+    rightJoyY = rightJoyY | rightJoyStickYLSB;
+    
+    if((rightJoyY > 1500 + deadzone))
     {
         motorA_dir = 1;
         motorB_dir = 1;
     }
-    else
+    else if(rightJoyY < 1500 - deadzone)
     {
         motorA_dir = 2;
-        motorB_dir = 2;
-        
+        motorB_dir = 2; 
     }
-    transmitCommonMotor();
-    transmitByte(motorA_dir);
-    transmitByte(50);   
-    transmitByte(motorB_dir);  
-    transmitByte(50);
+    else
+    {
+        motorA_dir = 0;
+        motorB_dir = 0; 
+    }
     
+    
+    testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }

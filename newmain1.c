@@ -214,14 +214,18 @@ void main(void) {
         //testPulseMotor(0x01, 0x64, 0x01, 0x64);
        // getPCLS();  
        // __delay_ms(10);
-        motorControl();
+        
         getUserData();
-        __delay_ms(10);
+        __delay_ms(100);
+        
         sort_data();
-        __delay_ms(250);
+        
+        __delay_ms(200);
+       motorControl();
+        __delay_ms(1);
+        
         
     } 
 
     return;
 }
-

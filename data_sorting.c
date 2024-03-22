@@ -61,7 +61,7 @@ int increase()
 void get_pcls_info()
 {
     uint16_t payload;
-    uint8_t searching_error = 110;
+    uint8_t searching_error = 10;
     uint8_t search_count = 0;
     
     if(increase())
@@ -71,7 +71,7 @@ void get_pcls_info()
     if(increase())
         return;
     payload = payload << 8;
-    payload = payload || *read_here;
+    payload = payload | *read_here;
     
     while(1)
     {
@@ -117,7 +117,7 @@ void get_pcls_info()
 void get_user_data()
 {
     uint16_t payload = *read_here;
-    uint8_t searching_error = 110;
+    uint8_t searching_error = 10;
     uint8_t search_count = 0;
     
     if(increase())
@@ -127,7 +127,7 @@ void get_user_data()
     if(increase())
         return;
     payload = payload << 8;
-    payload = payload || *read_here;
+    payload = payload | *read_here;
     
     while(1)
     {
@@ -222,7 +222,7 @@ void sort_data()
 {
     uint8_t searching_error = 110;
     uint8_t search_count = 0;
-
+    
     while(*read_here != 0xFE)
     {
         if(check())
