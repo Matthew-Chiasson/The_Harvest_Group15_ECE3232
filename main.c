@@ -5,18 +5,24 @@
 #pragma config FCMEN = ON
 
 #include <xc.h>
+#include <stdbool.h>
+#include "motorControl.h"
+#include "data_sorting.h"
 
 #pragma config WDTE = OFF
 
 #define _XTAL_FREQ 32000000
 
+
 /*
 a global variable in place of a parameter to be used by the ISR
 */
 int byteToSend = 1;
-int DataIn[8];
-int Index = 0;
-
+//int dataIn[208]; // in data_sorting.h now called messages[100]
+int payloadSize = 0;
+int index = 0;
+bool ReceiveComplete;
+int here = 0;
 
 void waitForIt(){
     
@@ -53,9 +59,25 @@ void setUp(void){
     INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
     PIE3bits.RCIE = 1;   // Receive interrupt enabled
     ANSELCbits.ANSC6 = 0; // RC6 is digital input
-    //PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
-    
 }
+
+void identifyMSG(int msg_In[]){
+
+    //message bytes
+    int msg_ID_byte1 = msg_In[2];
+    int msg_ID_byte2 = msg_In[3];
+
+    //do stuff based on message bytes
+    if(msg_ID_byte1 == 2 && msg_ID_byte2 == 4){ //PCLS
+    
+        //do code for PCLS
+        here = 1; //for testing purposes
+        
+    
+    }//else if other stuff (not yet implemented)
+
+}
+
 
 void __interrupt() _ISR(){  
     
@@ -63,92 +85,43 @@ void __interrupt() _ISR(){
         PIE3bits.TXIE = 0;
         waitForIt();//boom
     }
-    
+
     
    if(PIR3bits.RCIF == 1){ //receive flag
        
-        DataIn = RC1REG;
-//       DataIn[Index] = RC1REG;
-//       Index = Index + 1;
-//       if (Index >= 7)
-//       {
-//           Index = 7;
-//       }
+       *receive_here = RC1REG;
+        receive_here ++;
+        end();
        
     }
-        
-    
 }
-
+        
 
 void transmitByte(int byteToSend_IN){
     
     byteToSend = byteToSend_IN; //set global var
     TX1REGbits.TX1REG = byteToSend; //set the register to hold the value
     PIE3bits.TXIE = 1; // USART Transmit Interrupt Enable bit: 1 = Enables the USART transmit interrupt
-  
 }
  
 
-void transmitSync(){
-    
+void transmitSync(){   
     transmitByte(0xFE); // sync
-
     transmitByte(0x19); // sync
-
 }
 
-void transmitCommonMotor(void){
-
-    //0xFE 19 (sink) 
-    // 01060400;
-    
-    //sink has already been called
-    
-    transmitByte(0x01);
-
-    transmitByte(0x06);
-
-    transmitByte(0x04);
-    
-    transmitByte(0x00);
-
-}
-
-
-void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
-    
-    transmitSink();
-    
-    transmitCommonMotor();
-    
-    transmitByte(motorA_dir_IN);
-    
-    transmitByte(motorA_speed_IN);
-        
-    transmitByte(motorB_dir_IN);  
-    
-    transmitByte(motorB_speed_IN);
-
-}
 
 void getPCLS(){
 
     //recive register has a buffer of 2 bytes
-    
-    //ask pcls to get data from PCLS such as shield code and health status
+    //ask pcls to get data from controller
     
     transmitSync();
     
     transmitByte(0x01); // MSG ID
-    
     transmitByte(0x04); // MSG ID
-    
     transmitByte(0x00);
-    
     transmitByte(0x00);
-    
-    //
 }
 
 void getUserData(){
@@ -157,43 +130,39 @@ void getUserData(){
     transmitSync();
     
     transmitByte(0x01); // MSG ID
-    
     transmitByte(0x05); // MSG ID
-    
     transmitByte(0x00);
-    
     transmitByte(0x00);
-    
 }
-
 
 void main(void) {
     
     setUp();
     
-    //forward on motor A test
-    //01 64 00 00
+    //backward on motor A test
+    //02 64 00 00
     //0x64 is max speed
     
     while(1){
-        waitForIt();//boom
-        
-        
-        //testPulseMotor(0x01, 0x64, 0x00, 0x00);
-        getPCLS();
+        waitForIt(); //wait for Shift REG
+        ///////////////bD    aS    aD     bS
+        //testPulseMotor(0x01, 0x64, 0x01, 0x64);
+       // getPCLS();  
+       // __delay_ms(10);
+        motorControl();
         __delay_ms(10);
+        
+        
+        
         getUserData();
-      
-        //transmitByte(0x56);
-
-        //transmitByte(0xF1);
+        __delay_ms(10);
         
-        //transmitByte(0x00);
+        sort_data();
+        __delay_ms(10);
         
         
-        __delay_ms(250);
     } 
-    
+
     return;
 }
 
