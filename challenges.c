@@ -3,24 +3,73 @@
 #include "data_sorting.h"
 #include <xc.h>
 
+int potentiometerA;
+
 void challenges(){
+    
+    potentiometerA = VRAMSB;
+    potentiometerA = potentiometerA << 8;
+    potentiometerA = potentiometerA | VRALSB; 
 
 // IR SENSOR CHALLENGE
 // SWB to turn on IR sensor
     if(switchBMSB == 0x20) // 2000 means switch up, LSB always 00
     {
             TRISBbits.TRISB1 = 1; //RB1 input
-            TRISCbits.TRISC2 = 1; //RC2 output
+            TRISCbits.TRISC2 = 0; //RC2 output
             ANSELBbits.ANSB1 = 0; //RB1 is digital input
+            
+            // Let RC4, RC3, and RB5 be LED0, LED1, and LED2 respectively
+            TRISCbits.TRISC4 = 0; // LED output pins
+            TRISCbits.TRISC3 = 0; 
+            TRISBbits.TRISB5 = 0; 
+            
     
-    if (PORTBbits.RB1 == 0) //While IR sensor is active
-        {
-            LATCbits.LATC2 = 1; //turn LED on
-        }
-    else
-        {
-            LATCbits.LATC2 = 0; // necessary?
-        }
+    if      (potentiometerA>=1000 && potentiometerA<1166)
+    { 
+        LATCbits.LATC4 = 1;
+        LATCbits.LATC3 = 0;
+        LATBbits.LATB5 = 0;
+    }
+    else if (potentiometerA>=1167 && potentiometerA<1333)
+    {
+        LATCbits.LATC4 = 0;
+        LATCbits.LATC3 = 1;
+        LATBbits.LATB5 = 0;
+    }
+    else if (potentiometerA>=1334 && potentiometerA<1500)
+    {
+        LATCbits.LATC4 = 1;
+        LATCbits.LATC3 = 1;
+        LATBbits.LATB5 = 0;
+    }
+    else if (potentiometerA>=1501 && potentiometerA<1667)
+    {
+        LATCbits.LATC4 = 0;
+        LATCbits.LATC3 = 0;
+        LATBbits.LATB5 = 1;
+    }
+    else if (potentiometerA>=1668 && potentiometerA<1834)
+    {
+        LATCbits.LATC4 = 1;
+        LATCbits.LATC3 = 0;
+        LATBbits.LATB5 = 1;
+    }
+    else if (potentiometerA<=1835 && potentiometerA<2000)
+    {
+        LATCbits.LATC4 = 0;
+        LATCbits.LATC3 = 1;
+        LATBbits.LATB5 = 1;
+    }
+         
+//    if (PORTBbits.RB1 == 0) //While IR sensor is active
+//        {
+//            LATCbits.LATC2 = 1; //turn LED on
+//        }
+//    else
+//        {
+//            LATCbits.LATC2 = 0; // necessary?
+//        }
     }
 
 // LASER TURRET DEFENSE CHALLENGE
