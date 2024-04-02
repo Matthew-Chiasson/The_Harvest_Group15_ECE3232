@@ -77,8 +77,8 @@ extern uint8_t VRALSB;
 extern uint8_t VRAMSB;
 extern uint8_t VRBLSB;
 extern uint8_t VRBMSB;
-extern unit8_t TSVMSB;
 extern unit8_t TSVLSB;
+extern unit8_t TSVMSB;
 
 
 
