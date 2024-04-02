@@ -31,31 +31,31 @@ void challenges(){
         LATCbits.LATC3 = 0;
         LATBbits.LATB5 = 0;
     }
-    else if (potentiometerA>=1167 && potentiometerA<1333)
+    else if (potentiometerA>=1166 && potentiometerA<1333)
     {
         LATCbits.LATC4 = 0;
         LATCbits.LATC3 = 1;
         LATBbits.LATB5 = 0;
     }
-    else if (potentiometerA>=1334 && potentiometerA<1500)
+    else if (potentiometerA>=1333 && potentiometerA<1500)
     {
         LATCbits.LATC4 = 1;
         LATCbits.LATC3 = 1;
         LATBbits.LATB5 = 0;
     }
-    else if (potentiometerA>=1501 && potentiometerA<1667)
+    else if (potentiometerA>=1500 && potentiometerA<1667)
     {
         LATCbits.LATC4 = 0;
         LATCbits.LATC3 = 0;
         LATBbits.LATB5 = 1;
     }
-    else if (potentiometerA>=1668 && potentiometerA<1834)
+    else if (potentiometerA>=1667 && potentiometerA<1834)
     {
         LATCbits.LATC4 = 1;
         LATCbits.LATC3 = 0;
         LATBbits.LATB5 = 1;
     }
-    else if (potentiometerA<=1835 && potentiometerA<2000)
+    else if (potentiometerA<=1834 && potentiometerA<2000)
     {
         LATCbits.LATC4 = 0;
         LATCbits.LATC3 = 1;
