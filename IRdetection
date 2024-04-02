@@ -1,3 +1,7 @@
 #include<motorControl.h>
 
-void
+void main() {
+int TaskSpecificValue_MSB;
+int TaskSpecificValue_LSB;
+
+}
