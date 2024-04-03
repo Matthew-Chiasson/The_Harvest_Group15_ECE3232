@@ -92,48 +92,6 @@ void __interrupt() _ISR(){
        *receive_here = RC1REG;
         receive_here ++;
         end();
-       /*
-        if(index < 6 ){
-            *receive_here = RC1REG;
-            receive_here ++;
-            end();
-         
-            //messages[1] = RC1REG;
-            //dataIn[index] = RC1REG;
-        }
-        else if(index == 6){
-            payloadSize = *(receive_here - 1) + *(receive_here - 2) +6;
-            //payloadSize = dataIn[4] + dataIn[5] + 6;
-            //dataIn[index] = RC1REG;
-            *receive_here = RC1REG;
-            receive_here ++;
-            end();
-        }
-        else if(index < payloadSize){
-            //dataIn[index] = RC1REG;
-            *receive_here = RC1REG;
-            receive_here ++;
-            end();
-        }
-        index += 1;
-       
-        if(index == payloadSize){
-            *receive_here = RC1REG;
-            receive_here ++;
-            end();
-            index = 0;
-        }
-            /*
-            int *message = (int *)malloc(payloadSize * sizeof(int));
-            
-            for(int j = 0; j < (payloadSize); j++){       
-                message[j] = dataIn[j];
-            }
-            
-            identifyMSG(message); 
-            free(message);  
-             
-        }*/
        
     }
 }
@@ -151,31 +109,7 @@ void transmitSync(){
     transmitByte(0xFE); // sync
     transmitByte(0x19); // sync
 }
-
-/*
-void transmitCommonMotor(void){
-
-    //sink has already been called
-    transmitByte(0x01);
-    transmitByte(0x06);
-    transmitByte(0x04);
-    transmitByte(0x00);
-}
-
-
-void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
-    
-    transmitSync();
-    transmitCommonMotor();
-    
-    transmitByte(motorA_dir_IN);
-    transmitByte(motorA_speed_IN);   
-    transmitByte(motorB_dir_IN);  
-    transmitByte(motorB_speed_IN);
-}
-*/
  
-
 void getPCLS(){
 
     //recive register has a buffer of 2 bytes
@@ -210,10 +144,9 @@ void main(void) {
     
     while(1){
         waitForIt(); //wait for Shift REG
-        ///////////////bD    aS    aD     bS
-        //testPulseMotor(0x01, 0x64, 0x01, 0x64);
+        
        // getPCLS();  
-       // __delay_ms(10);
+       // __delay_ms(2);
         
         getUserData();
         __delay_ms(2);
