@@ -216,11 +216,11 @@ void main(void) {
        // __delay_ms(10);
         
         getUserData();
-        __delay_ms(100);
+        __delay_ms(2);
         
         sort_data();
         
-        __delay_ms(200);
+        __delay_ms(2);
        motorControl();
         __delay_ms(1);
         
