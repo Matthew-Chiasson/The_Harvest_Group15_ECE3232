@@ -1,4 +1,5 @@
 
+
 #include "challenges.h"
 #include "data_sorting.h"
 #include <xc.h>
@@ -13,12 +14,7 @@ void challenges(){
 
 // IR SENSOR CHALLENGE
 // SWB to turn on IR sensor
-    if(switchBMSB == 0x20) // 2000 means switch up, LSB always 00
-    {
-            TRISBbits.TRISB1 = 1; //RB1 input
-            TRISCbits.TRISC2 = 0; //RC2 output
-            ANSELBbits.ANSB1 = 0; //RB1 is digital input
-        
+ 
     if      (potentiometerA>=1000 && potentiometerA<1166)
     { 
             if (PORTBbits.RB1 == 0) //While IR sensor is active
@@ -86,7 +82,7 @@ void challenges(){
             LATCbits.LATC2 = 0; // necessary?
         }
     } 
-    }
+    
  
 // LASER TURRET DEFENSE CHALLENGE
 // SWD to send shield code
@@ -108,4 +104,4 @@ void challenges(){
             
         }    
     }
-
+}
