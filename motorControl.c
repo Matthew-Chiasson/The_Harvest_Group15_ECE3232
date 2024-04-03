@@ -113,12 +113,32 @@ void motorControl()
     motorA_speed = power * left_Multiplyer;
     motorB_speed = power * right_Multiplyer;
     
+    //tank turn
+    
     if(motorA_speed < 55){
-        motorA_speed = 45;
+        
+        motorA_speed = 55 + (55 - motorA_speed);
+
+        //flip dir
+        if(motorA_dir == 1)
+            motorA_dir = 2;
+        
+        if(motorA_dir == 2)
+            motorA_dir = 1;
+        
     }
     
     if(motorB_speed < 55){
-        motorB_speed = 45;
+        
+        motorB_speed = 55 + (55 - motorB_speed);
+
+        //flip dir
+        if(motorB_dir == 1)
+            motorB_dir = 2;
+        
+        if(motorB_dir == 2)
+            motorB_dir = 1;
+        
     }
     
     testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
