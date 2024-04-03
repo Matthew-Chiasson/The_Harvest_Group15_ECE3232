@@ -1,4 +1,3 @@
-
 #include "motorControl.h"
 #include "data_sorting.h"
 #include <math.h>
@@ -24,13 +23,6 @@ void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, i
     
     transmitSync();
     transmitCommonMotor();
-    
-    /*
-    transmitByte(motorB_dir_IN);
-    transmitByte(motorA_speed_IN);   
-    transmitByte(motorA_dir_IN);  
-    transmitByte(motorB_speed_IN);
-    */
     
     transmitByte(motorA_dir_IN);
     transmitByte(motorA_speed_IN);   
@@ -118,8 +110,7 @@ void motorControl()
     if(motorA_speed < 55){
         
         motorA_speed = 55 + (55 - motorA_speed);
-
-        //flip dir
+        
         if(motorA_dir == 1)
             motorA_dir = 2;
         
@@ -131,8 +122,7 @@ void motorControl()
     if(motorB_speed < 55){
         
         motorB_speed = 55 + (55 - motorB_speed);
-
-        //flip dir
+        
         if(motorB_dir == 1)
             motorB_dir = 2;
         
@@ -143,4 +133,5 @@ void motorControl()
     
     testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }
+
 
