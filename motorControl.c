@@ -120,19 +120,18 @@ void motorControl()
         if(motorA_dir == 1)
             motorA_dir = 2;
         
-        if(motorA_dir == 2)
-            motorA_dir = 1;
+        else if(motorA_dir == 2)
+            motorA_dir = 1;    
         
     }else if(leftJoyX > 1500 + deadzone){
     
         if(motorB_dir == 1)
             motorB_dir = 2;
         
-        if(motorB_dir == 2)
+        else if(motorB_dir == 2)
             motorB_dir = 1;
         
     }
-    
     
     testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }
