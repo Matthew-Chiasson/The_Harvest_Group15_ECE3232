@@ -4,6 +4,9 @@
 
 int rightJoyY;
 int rightJoyX;
+int leftJoyY;
+int leftJoyX;
+
 int power;
 float normalX;
 float normalY;
@@ -104,12 +107,15 @@ void motorControl()
     
     motorA_speed = power * left_Multiplyer;
     motorB_speed = power * right_Multiplyer;
+
     
     //tank turn
     
-    if(motorA_speed < 55){
-        
-        motorA_speed = 55 + (55 - motorA_speed);
+    leftJoyX = leftJoyStickXMSB;
+    leftJoyX = leftJoyX << 8;
+    leftJoyX = leftJoyX | leftJoyStickXLSB;
+    
+    if(leftJoyX < 1500 - deadzone){
         
         if(motorA_dir == 1)
             motorA_dir = 2;
@@ -117,12 +123,8 @@ void motorControl()
         if(motorA_dir == 2)
             motorA_dir = 1;
         
-    }
+    }else if(leftJoyX > 1500 + deadzone){
     
-    if(motorB_speed < 55){
-        
-        motorB_speed = 55 + (55 - motorB_speed);
-        
         if(motorB_dir == 1)
             motorB_dir = 2;
         
@@ -131,7 +133,7 @@ void motorControl()
         
     }
     
+    
     testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }
-
 
