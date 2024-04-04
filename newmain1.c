@@ -62,8 +62,11 @@ void setUp(void){
     ANSELCbits.ANSC6 = 0; // RC6 is digital input
     
     TRISBbits.TRISB1 = 1; //RB1 input
-    TRISCbits.TRISC2 = 0; //RC2 output
+    TRISCbits.TRISC2 = 0; //RC2 output - red LED
     ANSELBbits.ANSB1 = 0; //RB1 is digital input
+    TRISCbits.TRISC4 = 0; // RC4 output green LED
+    ANSELCbits.ANSC4 = 0;
+            
 }
 
 
@@ -141,8 +144,11 @@ void main(void) {
         
         motorControl();
         __delay_ms(2);
-        
-        challenges();
+    
+        if (switchBMSB == 0x7 || switchDMSB == 0x7)// if switch B or switch D is down
+        {
+            challenges();
+        }
         __delay_ms(2);
          
     } 
