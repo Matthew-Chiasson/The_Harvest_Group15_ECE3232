@@ -132,6 +132,8 @@ if (switchDMSB == 0x7)
     }
 }
 
+
+    // Switch A used to transmit task value message to processing plant
     if(switchAMSB == 0x7) // if switch A is down, send surface exploration command
     {
         transmitSync();
