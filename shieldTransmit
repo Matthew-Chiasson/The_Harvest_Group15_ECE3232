@@ -1,0 +1,27 @@
+void transmitShield(){
+    if (){ // if SWD (bytes 21 and 22) = 0x2000
+        
+        getPCLS(); // will give shield code flag status
+        
+        if (){ // shield code flag (PCLS response byte 11) != 0
+            
+            transmitSync(); // sync bytes
+            
+            transmitByte(0x02); // MSG ID
+            
+            transmitByte(0x09); // MSG ID
+            
+            transmitByte(0x01); // Payload LSB
+            
+            transmitByte(0x00); // Payload MSB
+            
+        }
+    }
+}
+
+
+    
+    return;
+}
+
+

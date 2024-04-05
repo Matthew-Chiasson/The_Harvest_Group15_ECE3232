@@ -1,0 +1,45 @@
+#include <xc.h>
+
+
+extern uint8_t VRALSB;
+extern uint8_t VRAMSB;
+
+int rightJoyY;
+int rightJoyX;
+int potentiometerA;
+int potentiometerB;
+
+void main(void) {
+    
+    potentiometerA = VRAMSB;
+    potentiometerA = potentiometerA << 8;
+    potentiometerA = potentiometerA | VRALSB;
+    
+    
+    if      (potentiometerA>=1000 && potentiometerA<1166)
+    { 
+        
+    }
+    else if (potentiometerA>=1167 && potentiometerA<1333)
+    {
+        
+    }
+    else if (potentiometerA>=1334 && potentiometerA<1500)
+    {
+        
+    }
+    else if (potentiometerA>=1501 && potentiometerA<1667)
+    {
+        
+    }
+    else if (potentiometerA>=1668 && potentiometerA<1834)
+    {
+        
+    }
+    else if (potentiometerA>=1835 && potentiometerA<2000)
+    {
+        
+    }
+    
+    return;
+}

@@ -7,6 +7,8 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "motorControl.h"
+#include "data_sorting.h"
+#include "challenges.h"
 
 #pragma config WDTE = OFF
 
@@ -17,7 +19,7 @@
 a global variable in place of a parameter to be used by the ISR
 */
 int byteToSend = 1;
-int dataIn[208];
+//int dataIn[208]; // in data_sorting.h now called messages[100]
 int payloadSize = 0;
 int index = 0;
 bool ReceiveComplete;
@@ -58,23 +60,10 @@ void setUp(void){
     INTCONbits.PEIE = 1; //Peripheral Interrupt Enable bit: 1 = Enables all active peripheral interrupts
     PIE3bits.RCIE = 1;   // Receive interrupt enabled
     ANSELCbits.ANSC6 = 0; // RC6 is digital input
-}
-
-void identifyMSG(int msg_In[]){
-
-    //message bytes
-    int msg_ID_byte1 = msg_In[2];
-    int msg_ID_byte2 = msg_In[3];
-
-    //do stuff based on messageb bytes
-    if(msg_ID_byte1 == 2 && msg_ID_byte2 == 4){ //PCLS
     
-        //do code for PCLS
-        here = 1; //for testing purposes
-        
-    
-    }//else if other stuff (not yet implemented)
-
+    TRISBbits.TRISB1 = 1; //RB1 input
+    TRISCbits.TRISC2 = 0; //RC2 output
+    ANSELBbits.ANSB1 = 0; //RB1 is digital input
 }
 
 
@@ -88,31 +77,10 @@ void __interrupt() _ISR(){
     
    if(PIR3bits.RCIF == 1){ //receive flag
        
-        if(index < 6 ){
-            dataIn[index] = RC1REG;
-        }
-        else if(index == 6){
-            payloadSize = dataIn[4] + dataIn[5] + 6;
-            dataIn[index] = RC1REG;
-        }
-        else if(index < payloadSize){
-            dataIn[index] = RC1REG;
-        }
-        index += 1;
+       *receive_here = RC1REG;
+        receive_here ++;
+        end();
        
-        if(index == payloadSize){
-            index = 0;
-            
-            int *message = (int *)malloc(payloadSize * sizeof(int));
-            
-            for(int j = 0; j < (payloadSize); j++){       
-                message[j] = dataIn[j];
-            }
-            
-            identifyMSG(message); 
-            free(message);  
-             
-        }
     }
 }
         
@@ -129,29 +97,6 @@ void transmitSync(){
     transmitByte(0xFE); // sync
     transmitByte(0x19); // sync
 }
-
-/*
-void transmitCommonMotor(void){
-
-    //sink has already been called
-    transmitByte(0x01);
-    transmitByte(0x06);
-    transmitByte(0x04);
-    transmitByte(0x00);
-}
-
-
-void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
-    
-    transmitSync();
-    transmitCommonMotor();
-    
-    transmitByte(motorA_dir_IN);
-    transmitByte(motorA_speed_IN);   
-    transmitByte(motorB_dir_IN);  
-    transmitByte(motorB_speed_IN);
-}
-*/
  
 
 void getPCLS(){
@@ -178,26 +123,90 @@ void getUserData(){
     transmitByte(0x00);
 }
 
+void shoot(){
+    
+    transmitSync();
+    transmitByte(0x01);
+    transmitByte(0x09);
+    transmitByte(0x01);
+    transmitByte(0x00);
+    transmitByte(0x01);
+    __delay_ms(2);
+    
+}
+
+void requestHealShot(){
+
+    transmitSync();
+    transmitByte(0x03);
+    transmitByte(0x09);
+    transmitByte(0x00);
+    transmitByte(0x00);
+    __delay_ms(2);
+    
+}
+
+void transmitHealShot(){
+
+    transmitSync();
+    transmitByte(0x04);
+    transmitByte(0x09);
+    transmitByte(0x01);
+    transmitByte(0x00);
+    __delay_ms(2);
+    
+}
+
+int chaimber = 0;
+
+void handleShooting(){
+
+    if(switchBMSB != 0x3)
+        return;
+    
+    if(switchCMSB == 0x5)
+        chaimber = 0;
+    
+    
+    if(switchCMSB == 0x7)
+        requestHealShot();
+    
+    
+    //if(switchAMSB == 0x3 && switchCMSB == 0x3)
+        //transmitHealShot();
+    
+        
+    if(switchCMSB == 0x3 && switchAMSB == 0x7 && chaimber == 0){ //Ad Bu Cu
+        shoot();
+        chaimber = 1;
+    }
+    
+}
+
+
 void main(void) {
     
     setUp();
     
-    //backward on motor A test
-    //02 64 00 00
-    //0x64 is max speed
-    
     while(1){
         waitForIt(); //wait for Shift REG
-        ///////////////bD    aS    aD     bS
-        testPulseMotor(0x01, 0x64, 0x01, 0x64);
-        getPCLS();  
-        __delay_ms(10);
-        getUserData();
         
-        __delay_ms(250);
+        getUserData();
+        __delay_ms(2);
+        
+        sort_data();       
+        __delay_ms(2);
+        
+        motorControl();
+        __delay_ms(2);
+        
+        challenges();
+        __delay_ms(2);
+        
+        handleShooting();
+        __delay_ms(2);
+         
     } 
 
     return;
 }
-
-
