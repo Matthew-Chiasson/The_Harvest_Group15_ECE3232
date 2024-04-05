@@ -62,11 +62,8 @@ void setUp(void){
     ANSELCbits.ANSC6 = 0; // RC6 is digital input
     
     TRISBbits.TRISB1 = 1; //RB1 input
-    TRISCbits.TRISC2 = 0; //RC2 output - red LED
+    TRISCbits.TRISC2 = 0; //RC2 output
     ANSELBbits.ANSB1 = 0; //RB1 is digital input
-    TRISCbits.TRISC4 = 0; // RC4 output green LED
-    ANSELCbits.ANSC4 = 0;
-            
 }
 
 
@@ -126,15 +123,73 @@ void getUserData(){
     transmitByte(0x00);
 }
 
+void shoot(){
+    
+    transmitSync();
+    transmitByte(0x01);
+    transmitByte(0x09);
+    transmitByte(0x01);
+    transmitByte(0x00);
+    transmitByte(0x01);
+    __delay_ms(2);
+    
+}
+
+void requestHealShot(){
+
+    transmitSync();
+    transmitByte(0x03);
+    transmitByte(0x09);
+    transmitByte(0x00);
+    transmitByte(0x00);
+    __delay_ms(2);
+    
+}
+
+void transmitHealShot(){
+
+    transmitSync();
+    transmitByte(0x04);
+    transmitByte(0x09);
+    transmitByte(0x01);
+    transmitByte(0x00);
+    __delay_ms(2);
+    
+}
+
+int chaimber = 0;
+
+void handleShooting(){
+
+    if(switchBMSB != 0x3)
+        return;
+    
+    if(switchCMSB == 0x5)
+        chaimber = 0;
+    
+    
+    if(switchCMSB == 0x7)
+        requestHealShot();
+    
+    
+    //if(switchAMSB == 0x3 && switchCMSB == 0x3)
+        //transmitHealShot();
+    
+        
+    if(switchCMSB == 0x3 && switchAMSB == 0x7 && chaimber == 0){ //Ad Bu Cu
+        shoot();
+        chaimber = 1;
+    }
+    
+}
+
+
 void main(void) {
     
     setUp();
     
     while(1){
         waitForIt(); //wait for Shift REG
-        
-       // getPCLS();  
-       // __delay_ms(2);
         
         getUserData();
         __delay_ms(2);
@@ -144,11 +199,11 @@ void main(void) {
         
         motorControl();
         __delay_ms(2);
-    
-        if (switchBMSB == 0x7 || switchDMSB == 0x7)// if switch B or switch D is down
-        {
-            challenges();
-        }
+        
+        challenges();
+        __delay_ms(2);
+        
+        handleShooting();
         __delay_ms(2);
          
     } 
