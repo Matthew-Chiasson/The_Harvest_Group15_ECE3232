@@ -61,13 +61,13 @@ void motorControl()
     //forward backward
     if((rightJoyY > 1500 + deadzone))
     {
-        motorA_dir = 1;
-        motorB_dir = 1;
+        motorA_dir = 2;
+        motorB_dir = 2;
     }
     else if(rightJoyY < 1500 - deadzone)
     {
-        motorA_dir = 2;
-        motorB_dir = 2; 
+        motorA_dir = 1;
+        motorB_dir = 1; 
     }
     else
     {
@@ -135,4 +135,3 @@ void motorControl()
     
     pulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }
-
