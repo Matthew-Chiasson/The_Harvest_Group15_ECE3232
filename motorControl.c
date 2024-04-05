@@ -22,7 +22,7 @@ void transmitCommonMotor(void){
 
 
 
-void testPulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
+void pulseMotor(int motorA_dir_IN, int motorA_speed_IN, int motorB_dir_IN, int motorB_speed_IN){
     
     transmitSync();
     transmitCommonMotor();
@@ -133,6 +133,6 @@ void motorControl()
         
     }
     
-    testPulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
+    pulseMotor(motorA_dir, motorA_speed, motorB_dir, motorB_speed);    
 }
 
